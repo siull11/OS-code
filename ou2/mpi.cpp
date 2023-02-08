@@ -37,7 +37,6 @@ void kill(mpi* mpi) {
     free(mpi);
 
     // If not the parent process, exit
-    fprintf(stderr, "me:%d\n", me);
     if (me != 0) {
         fprintf(stderr, "kill %d\n", me);
         exit(EXIT_SUCCESS);
