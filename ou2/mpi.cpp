@@ -24,7 +24,7 @@ mpi* init(int n) {
     me = createProcesses(n);
 
     // Close unused pipes for each process
-    for (int i = 0; i < instance->n; i++) { //ksk nt denna typ av close???
+    for (int i = 0; i < instance->n; i++) {
         if (me == i) close(instance->pipes[i][WRITE_END]);
         else close(instance->pipes[i][READ_END]);
     }
@@ -34,12 +34,12 @@ mpi* init(int n) {
 
 void kill(mpi* mpi) {
     // Close all pipes
-    for (int i = 0; i < mpi->n; i++) { //ksk nt denna typ av close???
+    for (int i = 0; i < mpi->n; i++) {
         if (me == i) close(mpi->pipes[i][READ_END]);
         else close(mpi->pipes[i][WRITE_END]);
     }
 
-    // Free memory // flytta upp ovan exit???
+    // Free memory
     for (int i = 0; i < mpi->n; i++) free(mpi->pipes[i]);
     free(mpi->pipes);
     free(mpi);
@@ -52,7 +52,6 @@ int** createPipes(int n) {
     // Allocate space for filedescriptor array
     int** fd = (int**) malloc(sizeof(int*) * n);
     if (fd == NULL) Err("Allocation failed");
-
 
     // Create and allocate space for n pipes
     for (int i = 0; i < n; i++) {
@@ -74,5 +73,6 @@ int createProcesses(int n) {
 
         if (pid == 0) break; // Child process
     }
+
     return i % n;
 }
