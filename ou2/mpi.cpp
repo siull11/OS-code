@@ -9,7 +9,6 @@
 
 int** createPipes(int n);
 int createProcesses(int n);
-void connectPipes(mpi* mpi);
 
 static int me;
 
@@ -23,7 +22,12 @@ mpi* init(int n) {
     
     instance->pipes = createPipes(n);
     me = createProcesses(n);
-    connectPipes(instance);
+
+    // Close unused pipes for each process
+    for (int i = 0; i < instance->n; i++) { //ksk nt denna typ av close???
+        if (me == i) close(instance->pipes[i][WRITE_END]);
+        else close(instance->pipes[i][READ_END]);
+    }
 
     return instance;
 }
@@ -71,11 +75,4 @@ int createProcesses(int n) {
         if (pid == 0) break; // Child process
     }
     return i % n;
-}
-
-void connectPipes(mpi* mpi) {
-    for (int i = 0; i < mpi->n; i++) { //ksk nt denna typ av close???
-        if (me == i) close(mpi->pipes[i][WRITE_END]);
-        else close(mpi->pipes[i][READ_END]);
-    }
 }
