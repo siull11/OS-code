@@ -15,3 +15,4 @@ typedef struct mpi {
 // Functions
 mpi* init(int n);
 void kill(mpi* mpi);
+int getMe();

@@ -13,6 +13,10 @@ void connectPipes(mpi* mpi);
 
 static int me;
 
+int getMe() {
+    return me;
+}
+
 mpi* init(int n) {
     mpi* instance = (mpi*) malloc(sizeof(mpi));
     instance->n = n;
@@ -37,12 +41,7 @@ void kill(mpi* mpi) {
     free(mpi);
 
     // If not the parent process, exit
-    if (me != 0) {
-        fprintf(stderr, "kill %d\n", me);
-        exit(EXIT_SUCCESS);
-    } else {
-        fprintf(stderr, "i am parent %d\n", me);
-    }
+    if (me != 0) exit(EXIT_SUCCESS);
 }
 
 int** createPipes(int n) {

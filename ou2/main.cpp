@@ -4,7 +4,8 @@
 
 int main(int argc, char* argv[]) {
     mpi* mpi = init(2);
-    fprintf(stderr, "Hello world!\n");
+    int me = getMe();
+    fprintf(stderr, "Hello world! %d\n", me);
     kill(mpi);
     fprintf(stderr, "End!\n");
     return 0;
