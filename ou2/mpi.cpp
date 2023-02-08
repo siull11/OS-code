@@ -1,37 +1,49 @@
 #include "mpi.h"
 
+int** createPipes(int n);
+int createProcesses(int n, int* pids);
+void connectPipes(mpi* mpi);
+
 mpi* init(int n) {
-    //int** pipes = createPipes(n);
-    printf("Hello world!\n");
+    mpi* instance = (mpi*) malloc(sizeof(mpi));
+    instance->n = n;
+    
+    // Allocate space for pid array
+    instance->pids = (int*) malloc(sizeof(int) * n);
+    if (instance->pids == NULL) {
+        perror("Allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    
+    instance->pipes = createPipes(n);
+    instance->me = createProcesses(n, instance->pids);
+    connectPipes(instance);
+
+    return instance;
 
 }
 
 void kill(mpi* mpi) {
-    // Close all pipes !!!
-
-    // Kill all processes
-    for (int i = 1; i < mpi->n; i++) { // ksk nt första + fel ordning???
-        kill(mpi->pids[i], SIGKILL);
+    // Close all pipes
+    for (int i = 0; i < mpi->n; i++) { //ksk nt denna typ av close???
+        if (mpi->me == i) close(mpi->pipes[i][READ_END]);
+        else close(mpi->pipes[i][WRITE_END]);
     }
 
-    // Free memory
+    // Free memory // flytta upp ovan exit???
     free(mpi->pids);
     for (int i = 0; i < mpi->n; i++) {
         free(mpi->pipes[i]);
     }
     free(mpi->pipes);
     free(mpi);
+
+    // If not the parent process, exit
+    if (mpi->me != 0) {
+        exit(EXIT_SUCCESS);
+    }
 }
 
-/* createPipes function:
-Allocates memory for and creates n pipes.
-
-Argument:
-The amount of pipes to create, n.
-
-Returns:
-The filedescriptors to both ends of all pipes.
-*/
 int** createPipes(int n) {
     // Allocate space for filedescriptor array
     int** fd = (int**) malloc(sizeof(int*) * n);
@@ -57,9 +69,11 @@ int** createPipes(int n) {
     return fd;
 }
 
-int* createProcesses(int n) {
+int createProcesses(int n, int *pids) {
+    pids[0] = getpid();
     // Create n-1 new processes
-    for (int i = 1; i < n; i++) {
+    int i;
+    for (i = 1; i < n; i++) {
 
         // Create a new process
         int pid = fork();
@@ -69,18 +83,17 @@ int* createProcesses(int n) {
         }
 
         if (pid == 0) { // Child process
-            
-            // Close all pipes except the one to the parent
-            for (int j = 0; j < n; j++) {
-                if (j != i) {
-                    close(pipes[j][READ_END]);
-                    close(pipes[j][WRITE_END]);
-                }
-            }
-            // Close the read end of the pipe to the parent
-            close(pipes[i][READ_END]);
-            // Run the process
-            process(i);
+            break;
+        } else { // Parent process
+            pids[i] = pid;
         }
+    }
+    return i % n;
+}
+
+void connectPipes(mpi* mpi) {
+    for (int i = 0; i < mpi->n; i++) { //ksk nt denna typ av close???
+        if (mpi->me == i) close(mpi->pipes[i][WRITE_END]);
+        else close(mpi->pipes[i][READ_END]);
     }
 }

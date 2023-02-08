@@ -3,7 +3,8 @@
 #include "mpi.h"
 
 int main(int argc, char* argv[]) {
-    init(3);
-    // ...
+    mpi* mpi = init(6);
+    printf("Hello world!\n");
+    kill(mpi);
     return 0;
 }

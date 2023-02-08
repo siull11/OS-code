@@ -14,7 +14,7 @@
 
 // Structs
 typedef struct mpi {
-    int pid;
+    int me;
     int *pids;
     int **pipes;
     int n;
