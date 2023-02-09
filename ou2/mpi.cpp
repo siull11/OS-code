@@ -1,4 +1,5 @@
 #include "mpi.h"
+#include <unistd.h>
 
 // Constants
 #define READ_END 0
@@ -25,7 +26,7 @@ mpi* init(int n) {
 
     // Close unused pipes for each process
     for (int i = 0; i < instance->n; i++) {
-        if (me == i) close(instance->pipes[i][WRITE_END]);
+        if (me == i) close(instance->pipes[i][WRITE_END]); // Göra så kan skicka till sig själv???
         else close(instance->pipes[i][READ_END]);
     }
 
@@ -76,3 +77,17 @@ int createProcesses(int n) {
 
     return i % n;
 }
+
+void send(mpi* mpi, int to, void* val, int type, int len) {
+    // Write to pipe
+    if (write(mpi->pipes[to][WRITE_END], val, type*len) < 0) Err("Write failed");
+}
+
+void* receive(mpi* mpi, int type, int len) {
+    void* val = malloc(type*len);
+    // Read from pipe
+    if (read(mpi->pipes[me][READ_END], val, type*len) < 0) Err("Read failed");
+    return val;
+}
+
+// void scatter

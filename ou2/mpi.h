@@ -4,7 +4,11 @@
 // Libs
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
+
+#define INT sizeof(int)
+#define CHAR sizeof(char)
+#define FLOAT sizeof(float)
+#define DOUBLE size_t(double)
 
 // Structs
 typedef struct mpi {
@@ -13,6 +17,8 @@ typedef struct mpi {
 } mpi;
 
 // Functions
+int getMe();
 mpi* init(int n);
 void kill(mpi* mpi);
-int getMe();
+void send(mpi* mpi, int to, void* val, int type, int len);
+void* receive(mpi* mpi, int type, int len);
