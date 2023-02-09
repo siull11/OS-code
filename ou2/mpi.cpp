@@ -105,7 +105,7 @@ void* scatter(mpi* mpi, int from, void* val, int size, int len) {
     return res;
 }
 
-void* gather(mpi* mpi, int to, void* val, int size, int len) {
+void* gather(mpi* mpi, int to, void* val, int size, int len) { // FIXA rätt ordning på res
     int block = len/mpi->n;
     int resSize = size*block;
     void* res = NULL;
