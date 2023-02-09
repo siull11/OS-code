@@ -83,11 +83,20 @@ void send(mpi* mpi, int to, void* val, int type, int len) {
     if (write(mpi->pipes[to][WRITE_END], val, type*len) < 0) Err("Write failed");
 }
 
-void* receive(mpi* mpi, int type, int len) {
+void* receive(mpi* mpi, int type, int len) { // fixa struct to send????
     void* val = malloc(type*len);
     // Read from pipe
     if (read(mpi->pipes[me][READ_END], val, type*len) < 0) Err("Read failed");
     return val;
 }
 
-// void scatter
+void* scatter(mpi* mpi, int from, void* val, int type, int len) {  // fixa struct to send????
+    int block = len/mpi->n;
+    void* msg = malloc(type*block);
+    if (me == from) { // I am sender
+        // Send to all processes
+        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, val, type, len);
+        for (int j = 0; j < block; j++) ((char*) msg)[j] = ((char*) val)[j+me*block];
+    } else msg = receive(mpi, type, block); // I am receiver
+    return msg;
+}
