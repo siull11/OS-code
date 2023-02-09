@@ -22,3 +22,5 @@ mpi* init(int n);
 void kill(mpi* mpi);
 void send(mpi* mpi, int to, void* val, int size, int len);
 void* receive(mpi* mpi, int size, int len);
+void* scatter(mpi* mpi, int from, void* val, int size, int len);
+void* gather(mpi* mpi, int to, void* val, int size, int len);

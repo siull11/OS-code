@@ -1,5 +1,6 @@
-#include "mpi.h"
 #include <unistd.h>
+#include <string.h>
+#include "mpi.h"
 
 // Constants
 #define READ_END 0
@@ -84,19 +85,39 @@ void send(mpi* mpi, int to, void* val, int size, int len) {
 }
 
 void* receive(mpi* mpi, int size, int len) { // fixa struct to send????
-    void* val = malloc(size*len);
+    void* res = malloc(size*len);
     // Read from pipe
-    if (read(mpi->pipes[me][READ_END], val, size*len) < 0) Err("Read failed");
-    return val;
+    if (read(mpi->pipes[me][READ_END], res, size*len) < 0) Err("Read failed");
+    return res;
 }
 
-void* scatter(mpi* mpi, int from, void* val, int size, int len) {  // fixa struct to send????
+void* scatter(mpi* mpi, int from, void* val, int size, int len) {
     int block = len/mpi->n;
-    void* msg = malloc(size*block);
+    int resSize = size*block;
+    void* res;
     if (me == from) { // I am sender
         // Send to all processes
-        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, val, size, len);
-        for (int j = 0; j < block; j++) ((char*) msg)[j] = ((char*) val)[j+me*block]; // FUNKAR BARA FÖR CHAR!!!
-    } else msg = receive(mpi, size, block); // I am receiver
-    return msg;
+        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, ((char*) val)+i*resSize, size, block);
+        // Copy to myself
+        res = malloc(resSize);
+        memcpy(res, ((char*) val)+me*resSize, resSize);
+    } else res = receive(mpi, size, block); // I am receiver
+    return res;
+}
+
+void* gather(mpi* mpi, int to, void* val, int size, int len) {
+    int block = len/mpi->n;
+    int resSize = size*block;
+    void* res = NULL;
+    if (me == to) { // I am receiver
+        res = malloc(size*len);
+        memcpy(((char*) res)+me*resSize, val, resSize); // Copy to myself
+        // Receive from all processes
+        for (int i = 0; i < mpi->n; i++) if (i != me) {
+            void* msg = receive(mpi, size, block);
+            memcpy(((char*) res)+i*resSize, msg, resSize);
+            free(msg);
+        }
+    } else send(mpi, to, val, size, block); // I am sender
+    return res;
 }
