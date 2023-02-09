@@ -20,5 +20,5 @@ typedef struct mpi {
 int getMe();
 mpi* init(int n);
 void kill(mpi* mpi);
-void send(mpi* mpi, int to, void* val, int type, int len);
-void* receive(mpi* mpi, int type, int len);
+void send(mpi* mpi, int to, void* val, int size, int len);
+void* receive(mpi* mpi, int size, int len);

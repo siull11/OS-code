@@ -78,25 +78,25 @@ int createProcesses(int n) {
     return i % n;
 }
 
-void send(mpi* mpi, int to, void* val, int type, int len) {
+void send(mpi* mpi, int to, void* val, int size, int len) {
     // Write to pipe
-    if (write(mpi->pipes[to][WRITE_END], val, type*len) < 0) Err("Write failed");
+    if (write(mpi->pipes[to][WRITE_END], val, size*len) < 0) Err("Write failed");
 }
 
-void* receive(mpi* mpi, int type, int len) { // fixa struct to send????
-    void* val = malloc(type*len);
+void* receive(mpi* mpi, int size, int len) { // fixa struct to send????
+    void* val = malloc(size*len);
     // Read from pipe
-    if (read(mpi->pipes[me][READ_END], val, type*len) < 0) Err("Read failed");
+    if (read(mpi->pipes[me][READ_END], val, size*len) < 0) Err("Read failed");
     return val;
 }
 
-void* scatter(mpi* mpi, int from, void* val, int type, int len) {  // fixa struct to send????
+void* scatter(mpi* mpi, int from, void* val, int size, int len) {  // fixa struct to send????
     int block = len/mpi->n;
-    void* msg = malloc(type*block);
+    void* msg = malloc(size*block);
     if (me == from) { // I am sender
         // Send to all processes
-        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, val, type, len);
-        for (int j = 0; j < block; j++) ((char*) msg)[j] = ((char*) val)[j+me*block];
-    } else msg = receive(mpi, type, block); // I am receiver
+        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, val, size, len);
+        for (int j = 0; j < block; j++) ((char*) msg)[j] = ((char*) val)[j+me*block]; // FUNKAR BARA FÖR CHAR!!!
+    } else msg = receive(mpi, size, block); // I am receiver
     return msg;
 }
