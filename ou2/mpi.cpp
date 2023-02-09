@@ -84,7 +84,7 @@ void send(mpi* mpi, int to, void* val, int size, int len) {
     if (write(mpi->pipes[to][WRITE_END], val, size*len) < 0) Err("Write failed");
 }
 
-void* receive(mpi* mpi, int size, int len) { // fixa struct to send????
+void* receive(mpi* mpi, int size, int len) { // lägga till parameter för lagra res, if null allokera åt mig!!!
     void* res = malloc(size*len);
     // Read from pipe
     if (read(mpi->pipes[me][READ_END], res, size*len) < 0) Err("Read failed");
