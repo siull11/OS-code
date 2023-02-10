@@ -31,10 +31,8 @@ int main(int argc, char* argv[]) {
     vector<double> vec(me == 0 ? n : blockSize, 0);
     if (me == 0) {
         vec.resize(n);
-        for (unsigned long i = 0; i < vec.size(); i++) {
-            double val = pow(-1, i) * ((double) rand())/100000;
-            vec[i] = val;
-        }
+        for (unsigned long i = 0; i < vec.size(); i++)
+            vec[i] = pow(-1, i) * ((double) rand())/100000;;
     }
 
     // Scatter vector
@@ -43,9 +41,7 @@ int main(int argc, char* argv[]) {
 
     // Do work
     double sum = 0;
-    for (unsigned long i = 0; i < vec.size(); i++) {
-        sum += vec[i];
-    }
+    for (unsigned long i = 0; i < vec.size(); i++) sum += vec[i];
 
     // Gather results
     if (me == 0) vec.resize(np);
@@ -54,10 +50,7 @@ int main(int argc, char* argv[]) {
     // Calc, print results
     if (me == 0) {
         double total = 0;
-        for (unsigned long i = 0; i < vec.size(); i++) {
-            // cout << vec[i] << endl;
-            total += vec[i];
-        }
+        for (unsigned long i = 0; i < vec.size(); i++) total += vec[i];
         cout << "Total: " << total << endl;
     }
 

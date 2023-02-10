@@ -21,16 +21,11 @@ int main(int argc, char* argv[]) {
     // Generate random vectors
     vector<double> vec(n, 0);
     vec.resize(n);
-    for (unsigned long i = 0; i < vec.size(); i++) {
-        double val = pow(-1, i) * ((double) rand())/100000;
-        vec[i] = val;
-    }
+    for (unsigned long i = 0; i < vec.size(); i++) vec[i] = pow(-1, i) * ((double) rand())/100000;
 
     // Calc, print results
     double sum = 0;
-    for (unsigned long i = 0; i < vec.size(); i++) {
-        sum += vec[i];
-    }
+    for (unsigned long i = 0; i < vec.size(); i++) sum += vec[i];
     cout << "Total: " << sum << endl;
 
     return 0;
