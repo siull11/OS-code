@@ -1,4 +1,5 @@
 // g++ -Wall test1parallel.cpp mpi.c -o test1parallel && ./test1parallel 2 10 0
+// time ./test1parallel 2 10000 0
 
 #include <iostream>
 #include <vector>

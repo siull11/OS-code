@@ -1,4 +1,5 @@
 // g++ -Wall test1serial.cpp mpi.c -o test1serial && ./test1serial 10 0
+// time ./test1serial 10000 0
 
 #include <iostream>
 #include <vector>
