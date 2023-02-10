@@ -1,15 +1,13 @@
 #pragma once
 
+// Constants
 #define INT sizeof(int)
 #define CHAR sizeof(char)
 #define FLOAT sizeof(float)
 #define DOUBLE size_t(double)
 
-// Structs
-typedef struct mpi {
-    int **pipes;
-    int n;
-} mpi;
+// Typedef
+typedef struct mpi mpi;
 
 // Functions
 char mpi_getRank();

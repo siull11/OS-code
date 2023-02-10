@@ -12,6 +12,12 @@
 // Macro
 #define Err(s) {perror(s); exit(EXIT_FAILURE);}
 
+// Struct
+struct mpi {
+    int **pipes;
+    int n;
+};
+
 int** createPipes(int n);
 int createProcesses(int n);
 

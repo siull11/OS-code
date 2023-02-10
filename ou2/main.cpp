@@ -7,16 +7,16 @@
 int main(int argc, char* argv[]) {
     fprintf(stderr, "Start!\n");
 
-    mpi* mpi = mpi_init(2);
-    char me = mpi_getRank();
-    if (me == 1) {
-        mpi_send(mpi, 0, (void *) "Hello parallel world!", CHAR*22);
-    } else if (me == 0) {
-        void* msg = mpi_receive(mpi, CHAR*22, NULL);
-        fprintf(stderr, "Received: %s\n", (char*) msg);
-        free(msg);
-    }
-    mpi_kill(mpi);
+    // mpi* mpi = mpi_init(2);
+    // char me = mpi_getRank();
+    // if (me == 1) {
+    //     mpi_send(mpi, 0, (void *) "Hello parallel world!", CHAR*22);
+    // } else if (me == 0) {
+    //     void* msg = mpi_receive(mpi, CHAR*22, NULL);
+    //     fprintf(stderr, "Received: %s\n", (char*) msg);
+    //     free(msg);
+    // }
+    // mpi_kill(mpi);
 
     mpi* mpi = mpi_init(3);
     char me = mpi_getRank();
