@@ -28,12 +28,8 @@ int main(int argc, char* argv[]) {
     char me = mpi_getRank(mpi);
 
     // Generate random vectors
-    vector<double> vec(me == 0 ? n : blockSize, 0);
-    if (me == 0) {
-        vec.resize(n);
-        for (unsigned long i = 0; i < vec.size(); i++)
-            vec[i] = pow(-1, i) * ((double) rand())/100000;;
-    }
+    vector<double> vec(me == 0 ? n : blockSize);
+    if (me == 0) for (unsigned long i = 0; i < vec.size(); i++) vec[i] = pow(-1, i) * ((double) rand())/100000;;
 
     // Scatter vector
     mpi_scatter(mpi, 0, (void *) &vec[0], &vec[0], DOUBLE, n);
@@ -54,6 +50,7 @@ int main(int argc, char* argv[]) {
         cout << "Total: " << total << endl;
     }
 
-    mpi_kill(mpi);
+    // Finalize mpi
+    mpi_kill(mpi, false);
     return 0;
 }

@@ -19,8 +19,7 @@ int main(int argc, char* argv[]) {
     else srand(time(0));
 
     // Generate random vectors
-    vector<double> vec(n, 0);
-    vec.resize(n);
+    vector<double> vec(n);
     for (unsigned long i = 0; i < vec.size(); i++) vec[i] = pow(-1, i) * ((double) rand())/100000;
 
     // Calc, print results

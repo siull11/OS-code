@@ -20,6 +20,7 @@ struct mpi {
 };
 
 //ADDA BLOCKING????
+//ASSUMES n % np == 0!!!
 
 int** createPipes(char n);
 char createProcesses(char n);
@@ -44,7 +45,7 @@ mpi* mpi_init(char n) {
     return instance;
 }
 
-void mpi_kill(mpi* mpi) {
+void mpi_kill(mpi* mpi, bool end) {
     char me = mpi->rank;
 
     // Close all pipes
@@ -58,8 +59,8 @@ void mpi_kill(mpi* mpi) {
     free(mpi->pipes);
     free(mpi);
 
-    // If not the parent process, exit
-    if (me != 0) exit(EXIT_SUCCESS);
+    // If end and not the parent process, exit
+    if (end && me != 0) exit(EXIT_SUCCESS);
 }
 
 int** createPipes(char n) {

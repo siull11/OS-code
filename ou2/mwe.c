@@ -30,7 +30,7 @@ void testSendRecv() {
         fprintf(stderr, "Me: %d\tReceived: %s\n", me, (char*) msg);
         free(msg);
     }
-    mpi_kill(mpi);
+    mpi_kill(mpi, 1);
 }
 
 void testScatterGather() {
@@ -58,5 +58,5 @@ void testScatterGather() {
         fprintf(stderr, "res: %d %d %d\n", res[0], res[1], res[2]);
         free(res);
     }
-    mpi_kill(mpi);
+    mpi_kill(mpi, 1);
 }
