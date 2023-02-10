@@ -1,4 +1,4 @@
-// gcc -Wall main.cpp mpi.cpp -o exec
+// gcc -Wall main.c mpi.c -o exec
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
     if (me == 0) {
         arr = (int*) malloc(sizeof(int) * 3);
         scanf("%d %d %d", arr, arr+1, arr+2);
-        // fprintf(stderr, "read: %d %d %d\n", arr[0], arr[1], arr[2]);
     }
     int* data = (int*) mpi_scatter(mpi, 0, (void *) arr, INT, 3);
     if (me == 0) {

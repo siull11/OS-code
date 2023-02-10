@@ -36,7 +36,7 @@ mpi* mpi_init(int n) {
 
     // Close unused pipes for each process
     for (int i = 0; i < instance->n; i++) {
-        if (myRank == i) close(instance->pipes[i][WRITE_END]); // Göra så kan skicka till sig själv???
+        if (myRank == i) close(instance->pipes[i][WRITE_END]);
         else close(instance->pipes[i][READ_END]);
     }
 
