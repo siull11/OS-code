@@ -15,7 +15,7 @@
 // Struct
 struct mpi {
     int **pipes;
-    int n;
+    char n;
     char rank;
 };
 
