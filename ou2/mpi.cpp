@@ -1,3 +1,6 @@
+// Libs
+#include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include "mpi.h"
@@ -12,32 +15,32 @@
 int** createPipes(int n);
 int createProcesses(int n);
 
-static int me;
+static char myRank;
 
-int getMe() {
-    return me;
+char mpi_getRank() {
+    return myRank;
 }
 
-mpi* init(int n) {
+mpi* mpi_init(int n) {
     mpi* instance = (mpi*) malloc(sizeof(mpi));
     instance->n = n;
     
     instance->pipes = createPipes(n);
-    me = createProcesses(n);
+    myRank = createProcesses(n);
 
     // Close unused pipes for each process
     for (int i = 0; i < instance->n; i++) {
-        if (me == i) close(instance->pipes[i][WRITE_END]); // Göra så kan skicka till sig själv???
+        if (myRank == i) close(instance->pipes[i][WRITE_END]); // Göra så kan skicka till sig själv???
         else close(instance->pipes[i][READ_END]);
     }
 
     return instance;
 }
 
-void kill(mpi* mpi) {
+void mpi_kill(mpi* mpi) {
     // Close all pipes
     for (int i = 0; i < mpi->n; i++) {
-        if (me == i) close(mpi->pipes[i][READ_END]);
+        if (myRank == i) close(mpi->pipes[i][READ_END]);
         else close(mpi->pipes[i][WRITE_END]);
     }
 
@@ -47,7 +50,7 @@ void kill(mpi* mpi) {
     free(mpi);
 
     // If not the parent process, exit
-    if (me != 0) exit(EXIT_SUCCESS);
+    if (myRank != 0) exit(EXIT_SUCCESS);
 }
 
 int** createPipes(int n) {
@@ -79,45 +82,52 @@ int createProcesses(int n) {
     return i % n;
 }
 
-void send(mpi* mpi, int to, void* val, int size, int len) {
+void mpi_send(mpi* mpi, char to, void* val, int size) {
     // Write to pipe
-    if (write(mpi->pipes[to][WRITE_END], val, size*len) < 0) Err("Write failed");
+    if (write(mpi->pipes[(int)to][WRITE_END], val, size) < 0) Err("Write failed");
 }
 
-void* receive(mpi* mpi, int size, int len) { // lägga till parameter för lagra res, if null allokera åt mig!!!
-    void* res = malloc(size*len);
+void* mpi_receive(mpi* mpi, int size, void* res) {
+    if (res == NULL) res = malloc(size); // Allocate memory if not already allocated
     // Read from pipe
-    if (read(mpi->pipes[me][READ_END], res, size*len) < 0) Err("Read failed");
+    if (read(mpi->pipes[(int)myRank][READ_END], res, size) < 0) Err("Read failed");
     return res;
 }
 
-void* scatter(mpi* mpi, int from, void* val, int size, int len) {
+void* mpi_scatter(mpi* mpi, char from, void* val, int type, int len) {
     int block = len/mpi->n;
-    int resSize = size*block;
+    int resSize = type*block;
     void* res;
-    if (me == from) { // I am sender
+    if (myRank == from) { // I am sender
         // Send to all processes
-        for (int i = 0; i < mpi->n; i++) if (i != me) send(mpi, i, ((char*) val)+i*resSize, size, block);
+        for (int i = 0; i < mpi->n; i++) if (i != myRank) mpi_send(mpi, i, ((char*) val)+i*resSize, type*block);
         // Copy to myself
         res = malloc(resSize);
-        memcpy(res, ((char*) val)+me*resSize, resSize);
-    } else res = receive(mpi, size, block); // I am receiver
+        memcpy(res, ((char*) val)+myRank*resSize, resSize);
+    } else res = mpi_receive(mpi, type*block, NULL); // I am receiver
     return res;
 }
 
-void* gather(mpi* mpi, int to, void* val, int size, int len) { // FIXA rätt ordning på res
+void* mpi_gather(mpi* mpi, char to, void* val, int type, int len) {
     int block = len/mpi->n;
-    int resSize = size*block;
+    int resSize = type*block;
     void* res = NULL;
-    if (me == to) { // I am receiver
-        res = malloc(size*len);
-        memcpy(((char*) res)+me*resSize, val, resSize); // Copy to myself
+    if (myRank == to) { // I am receiver
+        res = malloc(type*len);
+        memcpy(((char*) res)+myRank*resSize, val, resSize); // Copy to myself
         // Receive from all processes
-        for (int i = 0; i < mpi->n; i++) if (i != me) {
-            void* msg = receive(mpi, size, block);
-            memcpy(((char*) res)+i*resSize, msg, resSize);
+        for (int i = 0; i < mpi->n; i++) if (i != myRank) {
+            void* msg = mpi_receive(mpi, type*block+1, NULL);
+            char* bytes = (char*) msg;
+            memcpy(((char*) res)+(*bytes)*resSize, bytes+1, resSize);
             free(msg);
         }
-    } else send(mpi, to, val, size, block); // I am sender
+    } else { // I am sender
+        void* msg = malloc(resSize+1);
+        *((char*) msg) = myRank;
+        memcpy(((char*) msg)+1, val, resSize);
+        mpi_send(mpi, to, msg, type*block+1);
+        free(msg);
+    }
     return res;
 }

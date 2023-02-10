@@ -1,10 +1,5 @@
 #pragma once
 
-//Flytta till mpi.cpp???
-// Libs
-#include <stdlib.h>
-#include <stdio.h>
-
 #define INT sizeof(int)
 #define CHAR sizeof(char)
 #define FLOAT sizeof(float)
@@ -17,10 +12,10 @@ typedef struct mpi {
 } mpi;
 
 // Functions
-int getMe();
-mpi* init(int n);
-void kill(mpi* mpi);
-void send(mpi* mpi, int to, void* val, int size, int len);
-void* receive(mpi* mpi, int size, int len);
-void* scatter(mpi* mpi, int from, void* val, int size, int len);
-void* gather(mpi* mpi, int to, void* val, int size, int len);
+char mpi_getRank();
+mpi* mpi_init(int n);
+void mpi_kill(mpi* mpi);
+void mpi_send(mpi* mpi, char to, void* val, int size);
+void* mpi_receive(mpi* mpi, int size, void* res);
+void* mpi_scatter(mpi* mpi, char from, void* val, int type, int len);
+void* mpi_gather(mpi* mpi, char to, void* val, int type, int len);
