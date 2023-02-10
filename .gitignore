@@ -1,0 +1,15 @@
+# ignore everything
+*
+# unignore everything with file ending
+!*.*
+# unignore all directories
+!*/
+
+# unignore makefiles
+!Makefile*
+# ignore .o files
+*.o
+# ignore .d files
+*.d
+# Ignore pyhton pycache files
+*.pyc

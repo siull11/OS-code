@@ -1,6 +1,5 @@
-// g++ -Wall test1.cpp mpi.c -o test1
+// g++ -Wall test1parallel.cpp mpi.c -o test1parallel && ./test1parallel 2 10 0
 
-// #include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -39,14 +38,26 @@ int main(int argc, char* argv[]) {
 
     // Scatter vector
     mpi_scatter(mpi, 0, (void *) &vec[0], &vec[0], DOUBLE, n);
-
     if (me == 0) vec.resize(blockSize);
-    
+
+    // Do work
+    double sum = 0;
+    for (unsigned long i = 0; i < vec.size(); i++) {
+        sum += vec[i];
+    }
+
+    // Gather results
+    if (me == 0) vec.resize(np);
+    mpi_gather(mpi, 0, (void *) &sum, &vec[0], DOUBLE, np);
+
+    // Calc, print results
     if (me == 0) {
+        double total = 0;
         for (unsigned long i = 0; i < vec.size(); i++) {
-            cout << vec[i] << "," ;
+            // cout << vec[i] << endl;
+            total += vec[i];
         }
-        cout << endl;
+        cout << "Total: " << total << endl;
     }
 
     mpi_kill(mpi);
