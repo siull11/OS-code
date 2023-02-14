@@ -1,6 +1,6 @@
 // Parallely calculate the amount of primes under n
 
-// g++ -Wall test2parallel.cpp mpi.c -o test2parallel && ./test2parallel 2 10
+// g++ -Wall test2parallel.cpp ../mpi.c -o test2parallel && ./test2parallel 2 10
 // time ./test2parallel 2 10000
 
 #include <iostream>

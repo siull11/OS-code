@@ -1,6 +1,6 @@
 // Serially calculate the amount of primes under n
 
-// g++ -Wall test2serial.cpp mpi.c -o test2serial && ./test2serial 10
+// g++ -Wall test2serial.cpp -o test2serial && ./test2serial 10
 // time ./test2serial 10000
 
 #include <iostream>

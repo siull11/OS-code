@@ -2,7 +2,7 @@
 /* FURTHER IMPROVMENTS:
     All send / recev with id
     buffrad läsning (läs från buf först, sen läs tills rätt meddelande hittats och fyll buf) / alt. 2 trådar, en läser till cirkulär buf andra processar datan från buf
-    chunkad skrivning och läsning + read / write multiple times before crash / fcntl för att öka pipe buf size
+    chunkad skrivning och läsning + read / write multiple times before crash / fcntl för att öka pipe buf size (https://stackoverflow.com/questions/5218741/set-pipe-buffer-size)
 */
 
 // Libs
