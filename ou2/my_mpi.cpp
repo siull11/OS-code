@@ -2,13 +2,32 @@
 
 using namespace std;
 
+// MPI_Init(&argc, &argv);
+
 // int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
 
 }
 
 int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
-    
+    int np, me;
+    MPI_Comm_size(MPI_COMM_WORLD, &np);
+    MPI_Comm_rank(MPI_COMM_WORLD, &me);
+    int d = 2, c = 1;
+    while (c < np) {
+        if (me % d) {
+            MPI_Send(&vec[0], vec.size(), sendtype, me-c, 0, comm); // Send to process me-c
+            break;
+        } else {
+            if (me+c < np) {
+                vec.resize(vec.size()+pSizes[me+c]); // Resize array to accomidate for new elements
+                MPI_Recv(&vec[pSizes[me]], pSizes[me+c], recvtype, me+c, 0, comm, MPI_STATUS_IGNORE); // Recv from process me+c
+            }
+            for (int i = me; i < np; i += d) if (i+c < np) pSizes[i] += pSizes[i+c]; // Update sizes
+            d *= 2;
+            c *= 2;
+        }
+    }
 }
 // MPI tree gather and merge
 void treeGatherMerge(vector<double> &vec, int me, int np, int pSizes[], MPI_Comm com, int tag, bool asc) {
@@ -21,7 +40,7 @@ void treeGatherMerge(vector<double> &vec, int me, int np, int pSizes[], MPI_Comm
             if (me+c < np) {
                 vec.resize(vec.size()+pSizes[me+c]); // Resize array to accomidate for new elements
                 MPI_Recv(&vec[pSizes[me]], pSizes[me+c], MPI_DOUBLE, me+c, tag, com, MPI_STATUS_IGNORE); // Recv from process me+c
-                merge(&vec[0], 0, pSizes[me]-1, vec.size()-1, asc); // Merge updated array
+                // merge(&vec[0], 0, pSizes[me]-1, vec.size()-1, asc); // Merge updated array
             }
             for (int i = me; i < np; i += d) if (i+c < np) pSizes[i] += pSizes[i+c]; // Update sizes
             d *= 2;
