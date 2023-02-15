@@ -1,6 +1,6 @@
 // ASSUMES n % np == 0
 /* FURTHER IMPROVMENTS:
-    All send / recev with id
+    Tag f send, receive
     buffrad läsning (läs från buf först, sen läs tills rätt meddelande hittats och fyll buf) / alt. 2 trådar, en läser till cirkulär buf andra processar datan från buf
     chunkad skrivning och läsning + read / write multiple times before crash / fcntl för att öka pipe buf size (https://stackoverflow.com/questions/5218741/set-pipe-buffer-size)
 */

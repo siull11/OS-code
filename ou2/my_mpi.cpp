@@ -2,49 +2,30 @@
 
 using namespace std;
 
-// MPI_Init(&argc, &argv);
-
-// int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
-int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
-
-}
-
-int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
+// Naive implementation of MPI_Scatter
+int My_MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
     int np, me;
     MPI_Comm_size(MPI_COMM_WORLD, &np);
     MPI_Comm_rank(MPI_COMM_WORLD, &me);
-    int d = 2, c = 1;
-    while (c < np) {
-        if (me % d) {
-            MPI_Send(&vec[0], vec.size(), sendtype, me-c, 0, comm); // Send to process me-c
-            break;
-        } else {
-            if (me+c < np) {
-                vec.resize(vec.size()+pSizes[me+c]); // Resize array to accomidate for new elements
-                MPI_Recv(&vec[pSizes[me]], pSizes[me+c], recvtype, me+c, 0, comm, MPI_STATUS_IGNORE); // Recv from process me+c
-            }
-            for (int i = me; i < np; i += d) if (i+c < np) pSizes[i] += pSizes[i+c]; // Update sizes
-            d *= 2;
-            c *= 2;
-        }
-    }
+    if (me == root) {
+        int size;
+        MPI_Type_size(recvtype, &size);
+        for (char i = 0; i < np; i++) if (i != me) MPI_Send(((char*) sendbuf)+i*sendcount*size, sendcount, sendtype, i, 0, comm);
+        memcpy(recvbuf, ((char*) sendbuf)+me*sendcount*size, recvcount*size);
+    } else MPI_Recv(recvbuf, recvcount, recvtype, root, 0, comm, MPI_STATUS_IGNORE);
+    return 0;
 }
-// MPI tree gather and merge
-void treeGatherMerge(vector<double> &vec, int me, int np, int pSizes[], MPI_Comm com, int tag, bool asc) {
-    int d = 2, c = 1;
-    while (c < np) {
-        if (me % d) {
-            MPI_Send(&vec[0], vec.size(), MPI_DOUBLE, me-c, tag, com); // Send to process me-c
-            break;
-        } else {
-            if (me+c < np) {
-                vec.resize(vec.size()+pSizes[me+c]); // Resize array to accomidate for new elements
-                MPI_Recv(&vec[pSizes[me]], pSizes[me+c], MPI_DOUBLE, me+c, tag, com, MPI_STATUS_IGNORE); // Recv from process me+c
-                // merge(&vec[0], 0, pSizes[me]-1, vec.size()-1, asc); // Merge updated array
-            }
-            for (int i = me; i < np; i += d) if (i+c < np) pSizes[i] += pSizes[i+c]; // Update sizes
-            d *= 2;
-            c *= 2;
-        }
-    }
+
+// Naive implementation of MPI_Gather
+int My_MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
+    int np, me;
+    MPI_Comm_size(MPI_COMM_WORLD, &np);
+    MPI_Comm_rank(MPI_COMM_WORLD, &me);
+    if (me == root) {
+        int size;
+        MPI_Type_size(sendtype, &size);
+        for (char i = 0; i < np; i++) if (i != me) MPI_Recv(((char*) recvbuf)+i*recvcount*size, recvcount, recvtype, i, 0, comm, MPI_STATUS_IGNORE);
+        memcpy(((char*) recvbuf)+me*recvcount*size, sendbuf, sendcount*size);
+    } else MPI_Send(sendbuf, sendcount, sendtype, root, 0, comm);
+    return 0;
 }
