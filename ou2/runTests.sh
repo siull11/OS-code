@@ -12,22 +12,16 @@ step_n=2
 output_file1="output/test1.csv"
 output_file2="output/test2.csv"
 
-echo "np, n, total, time" > $output_file1
-echo "Running test 1"
-for ((i=$max_procs_factorial; i<=$max_n; i*=$step_n))
+for t in test1 test2
 do
-    for ((j=1; j<=$max_procs; j++))
-    do
-        mpirun -np $j ./test1 $i $seed >> $output_file1
-    done
-done
-
-echo "np, n, max, time" > $output_file2
-echo "Running test 2"
-for ((i=$max_procs_factorial; i<=$max_n; i*=$step_n))
-do
-    for ((j=1; j<=$max_procs; j++))
-    do
-        mpirun -np $j ./test2 $i $seed >> $output_file2
+    echo "Running $t"
+    for ((i=1; i<=$max_procs; i++))
+    do 
+        echo "with $i processes"
+        echo "n, total, time" > "output/$t-$i.csv"
+        for ((j=$max_procs_factorial; j<=$max_n; j*=$step_n))
+        do
+            mpirun -np $i ./$t $j $seed >> "output/$t-$i.csv"
+        done
     done
 done
