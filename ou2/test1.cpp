@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
         double total = 0;
         for (unsigned long i = 0; i < vec.size(); i++) total += vec[i];
         double t1 = MPI_Wtime();
-        cout << np << "," << total << "," << t1-t0 << endl;
+        cout << np << "," << n << "," << total << "," << t1-t0 << endl;
     }
 
     // Finalize mpi

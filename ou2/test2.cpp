@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
         max = vec[0];
         for (unsigned long i = 0; i < vec.size(); i++) if (vec[i] > max) max = vec[i];
         double t1 = MPI_Wtime();
-        cout << np << "," << max << "," << t1-t0 << endl;
+        cout << np << "," << n << "," << max << "," << t1-t0 << endl;
     }
 
     // Finalize mpi

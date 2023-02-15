@@ -12,7 +12,7 @@ step_n=2
 output_file1="output/test1.csv"
 output_file2="output/test2.csv"
 
-echo "n, total, time" > $output_file1
+echo "np, n, total, time" > $output_file1
 echo "Running test 1"
 for ((i=$max_procs_factorial; i<=$max_n; i*=$step_n))
 do
@@ -22,7 +22,7 @@ do
     done
 done
 
-echo "n, max, time" > $output_file2
+echo "np, n, max, time" > $output_file2
 echo "Running test 2"
 for ((i=$max_procs_factorial; i<=$max_n; i*=$step_n))
 do
