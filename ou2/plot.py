@@ -5,13 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-# python3 plot.py -t "Latency, Application Time" -d output -f task_1_data_FIFO.csv task_1_data_RR.csv -l FIFO RR -x threads -y "time [s]" -r 1 -cx 0 -cy 2 -a 20 -p
-
-# python3 plot.py -t "CPU Time" -d output -f task_1_data_FIFO.csv task_1_data_RR.csv -l FIFO RR -x threads -y "time [s]" -r 1 -cx 0 -cy 3 -a 20 -p
-# python3 plot.py -t "Throughput, CPU Time/nthreads" -f results/throughput.csv -n 2 -l FIFO RR -x threads -y "time [s]" -r 2 -cx 0 0 -cy 2 1 -p
-# python3 plot.py -t "Throughput, CPU Time/nthreads" -f results/throughputFull.csv -n 2 -l FIFO RR -x threads -y "time [s]" -r 2 -cx 0 0 -cy 2 1 -a 20 -p
-
-# python3 plot.py -t "Waiting Time" -d output -f task_1_data_FIFO.csv task_1_data_RR.csv -l FIFO RR -x threads -y "time [s]" -r 1 -cx 0 -cy 4 -a 20 -p
+# python3 plot.py -t "Times for test 1" -d output -f test1-1.csv test1-2.csv test1-4.csv test1-8.csv test1-16.csv test1-32.csv test1-64.csv -l "1 process" "2 processes" "4 processes" "8 processes" "16 processes" "32 processes" "64 processes" -x "length, n" -y "time [s]" -r 1 -cx 0 -cy 2 -p
 
 def main():
     parser = argparse.ArgumentParser(description='plot header, files to plot (csv), labels for files')
