@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-# python3 plot.py -t "Times for test 1" -d output -f test1-1.csv test1-2.csv test1-4.csv test1-8.csv test1-16.csv test1-32.csv test1-64.csv -l "1 process" "2 processes" "4 processes" "8 processes" "16 processes" "32 processes" "64 processes" -x "length, n" -y "time [s]" -r 1 -cx 0 -cy 2 -p
+# python3 plot.py -t "Times for test 1" -d output -f test1-1.csv test1-2.csv test1-3.csv test1-4.csv test1-5.csv test1-6.csv test1-7.csv test1-8.csv test1-9.csv test1-10.csv test1-11.csv test1-12.csv test1-13.csv test1-14.csv test1-15.csv test1-16.csv -l "1 process" "2 processes" "3 processes" "4 processes" "5 processes" "6 processes" "7 processes" "8 processes" "9 processes" "10 processes" "11 processes" "12 processes" "13 processes" "14 processes" "15 processes" "16 processes" -x "length, n" -y "time [s]" -r 1 -cx 0 -cy 2 -a 10
 
 def main():
     parser = argparse.ArgumentParser(description='plot header, files to plot (csv), labels for files')
