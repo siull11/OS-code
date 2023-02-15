@@ -9,9 +9,6 @@ max_procs_factorial=$(seq -s "*" 1 $max_procs |bc)
 max_n=200 #10000000
 step_n=2
 
-output_file1="output/test1.csv"
-output_file2="output/test2.csv"
-
 for t in test1 test2
 do
     echo "Running $t"
